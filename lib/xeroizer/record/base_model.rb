@@ -156,21 +156,33 @@ module Xeroizer
         result
       end
 
-      def save_records(records, chunk_size = DEFAULT_RECORDS_PER_BATCH_SAVE)
-        no_errors = true
-        return false unless records.all?(&:valid?)
+        def save_records(records, chunk_size = DEFAULT_RECORDS_PER_BATCH_SAVE)
+          no_errors = true
+          return false unless records.all?(&:valid?)
 
-        actions = records.group_by {|o| o.new_record? ? create_method : :http_post }
-        actions.each_pair do |http_method, records_for_method|
-          records_for_method.each_slice(chunk_size) do |some_records|
-            request = to_bulk_xml(some_records)
-            response = parse_response(self.send(http_method, request, {:summarizeErrors => false}))
-            response.response_items.each_with_index do |record, i|
-              if record and record.is_a?(model_class)
-                some_records[i].attributes = record.non_calculated_attributes
-                some_records[i].errors = record.errors
-                no_errors = record.errors.nil? || record.errors.empty? if no_errors
-                some_records[i].saved!
+          actions = records.group_by {|o| o.new_record? ? create_method : :http_post }
+          actions.each_pair do |http_method, records_for_method|
+            records_for_method.each_slice(chunk_size) do |some_records|
+              request = to_bulk_xml(some_records)
+              response = parse_response(self.send(http_method, request, {:summarizeErrors => false}))
+              response.response_items.each_with_index do |record, i|
+                if record and record.is_a?(model_class)
+
+                  # Broadcast saves for associated records
+                  record.attributes.each do |key, value|
+                    field = record.class.fields[key]
+                    if field[:type] == :has_many
+                      record.attributes[key].each_with_index { |associated_record, j| some_records[i].attributes[key][j].send(:broadcast, :saved_to_xero, associated_record)}
+                    elsif field[:type] == :belongs_to
+                      some_records[i].attributes[key].send(:broadcast, :saved_to_xero, record.attributes[key])
+                    end
+                  end
+
+                  some_records[i].attributes = record.non_calculated_attributes
+                  some_records[i].errors = record.errors
+                  no_errors = record.errors.nil? || record.errors.empty? if no_errors
+                  some_records[i].saved!
+                end
               end
             end
           end
