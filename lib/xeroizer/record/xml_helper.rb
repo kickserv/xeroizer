@@ -110,7 +110,7 @@ module Xeroizer
                 end
                 b.tag!(field[:api_name], real_value)
                 
-              when :datetime    then b.tag!(field[:api_name], value.utc.strftime("%Y-%m-%dT%H:%M:%S"))
+              when :datetime, :datetime_utc    then b.tag!(field[:api_name], value.utc.strftime("%Y-%m-%dT%H:%M:%S"))
               when :belongs_to  
                 value.to_xml(b)
                 nil
