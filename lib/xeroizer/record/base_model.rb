@@ -151,6 +151,17 @@ module Xeroizer
               response = parse_response(self.send(http_method, request, {:summarizeErrors => false}))
               response.response_items.each_with_index do |record, i|
                 if record and record.is_a?(model_class)
+
+                  # Broadcast saves for associated records
+                  record.attributes.each do |key, value|
+                    field = record.class.fields[key]
+                    if field[:type] == :has_many
+                      record.attributes[key].each_with_index { |associated_record, j| some_records[i].attributes[key][j].send(:broadcast, :saved_to_xero, associated_record)}
+                    elsif field[:type] == :belongs_to
+                      some_records[i].attributes[key].send(:broadcast, :saved_to_xero, record.attributes[key])
+                    end
+                  end
+
                   some_records[i].attributes = record.non_calculated_attributes
                   some_records[i].errors = record.errors
                   no_errors = record.errors.nil? || record.errors.empty? if no_errors
