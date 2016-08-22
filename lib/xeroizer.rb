@@ -11,6 +11,7 @@ require 'builder'
 require 'time'
 require 'bigdecimal'
 require 'cgi'
+require 'wisper'
 
 $: << File.expand_path(File.dirname(__FILE__))
 
