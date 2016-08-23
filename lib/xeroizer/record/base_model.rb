@@ -171,6 +171,7 @@ module Xeroizer
                   # Broadcast saves for associated records
                   associations = record.class.fields.select { |key, field| field[:type] == :has_many || field[:type] == :belongs_to }
                   associations.each do |key, field|
+                    next if record.attributes[key].nil?
                     if field[:type] == :has_many
                       record.attributes[key].each_with_index { |associated_record, j| some_records[i].attributes[key][j].send(:broadcast, :saved_to_xero, associated_record)}
                     else
