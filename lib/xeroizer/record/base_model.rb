@@ -173,9 +173,9 @@ module Xeroizer
                   associations.each do |key, field|
                     next if record.attributes[key].nil?
                     if field[:type] == :has_many
-                      record.attributes[key].each_with_index { |associated_record, j| some_records[i].attributes[key][j].send(:broadcast, :saved_to_xero, associated_record)}
+                      record.attributes[key].each_with_index { |associated_record, j| some_records[i].attributes[key][j].send(:broadcast, :saved_to_xero, associated_record) if some_records[i].attributes[key][j] }
                     else
-                      some_records[i].attributes[key].send(:broadcast, :saved_to_xero, record.attributes[key])
+                      some_records[i].attributes[key].send(:broadcast, :saved_to_xero, record.attributes[key]) if some_records[i].attributes[key]
                     end
                   end
 
