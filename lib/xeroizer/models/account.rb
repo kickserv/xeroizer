@@ -65,6 +65,7 @@ module Xeroizer
       string  :reporting_code
       string  :reporting_code_name
       datetime_utc :updated_date_utc, api_name: 'UpdatedDateUTC'
+
     end
 
   end

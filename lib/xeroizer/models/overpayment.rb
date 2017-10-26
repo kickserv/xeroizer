@@ -1,17 +1,18 @@
 module Xeroizer
   module Record
 
-    class PrepaymentModel < BaseModel
+    class OverpaymentModel < BaseModel
 
-      set_xml_root_name 'Prepayments'
+      set_xml_root_name 'Overpayments'
+      set_api_controller_name 'Overpayment'
       set_permissions :read
 
     end
 
-    class Prepayment < Base
-      set_primary_key :prepayment_id
+    class Overpayment < Base
+      set_primary_key :overpayment_id
 
-      guid          :prepayment_id
+      guid          :overpayment_id
       date          :date
       string        :status
       string        :line_amount_types
@@ -20,14 +21,13 @@ module Xeroizer
       decimal       :total
       datetime_utc  :updated_date_utc, :api_name => 'UpdatedDateUTC'
       string        :currency_code
-      datetime_utc  :fully_paid_on_date
       string        :type
-      string        :reference
-      decimal       :currency_rate
       decimal       :remaining_credit
       boolean       :has_attachments
 
       belongs_to    :contact
+      belongs_to    :invoice
+      has_many      :allocations
       has_many      :line_items
       has_many      :payments
 
