@@ -24,6 +24,8 @@ module Xeroizer
       include ValidationHelper
       include XmlHelper
 
+      include Wisper::Publisher
+
       class << self
 
         # Build a record with attributes set to the value of attributes.
@@ -126,6 +128,7 @@ module Xeroizer
         def saved!
           @complete_record_downloaded = true
           parent.mark_clean(self)
+          broadcast(:saved_to_xero, self)
           true
         end
 

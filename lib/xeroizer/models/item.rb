@@ -16,6 +16,7 @@ module Xeroizer
       string  :code
       string  :description
       string  :purchase_description
+      datetime_utc :updated_date_utc, api_name: 'UpdatedDateUTC'
       string  :name
 
       decimal :total_cost_pool # read only

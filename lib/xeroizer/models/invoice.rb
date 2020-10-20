@@ -76,10 +76,11 @@ module Xeroizer
       decimal      :amount_due
       decimal      :amount_paid
       decimal      :amount_credited
+      decimal      :total_discount
       datetime_utc :updated_date_utc, :api_name => 'UpdatedDateUTC'
       string       :currency_code
       decimal      :currency_rate
-      datetime     :fully_paid_on_date
+      date         :fully_paid_on_date
       datetime     :expected_payment_date
       datetime     :planned_payment_date
       boolean      :sent_to_contact
