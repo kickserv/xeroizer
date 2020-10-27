@@ -19,7 +19,6 @@ module Xeroizer
       datetime_utc :updated_date_utc, api_name: 'UpdatedDateUTC'
       string  :name
 
-      decimal :unit_price
       decimal :total_cost_pool # read only
       decimal :quantity_on_hand # read only
 
